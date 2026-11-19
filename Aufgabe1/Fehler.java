@@ -24,9 +24,32 @@ public class Fehler {
         double price;
         boolean test_ok = true;
 
+        // Test 1: 3 Extras -> 10% Rabatt auf Extras
         price = calculatePrice(10000.00, 2000.00, 1000.00, 3, 0);
-        test_ok = test_ok && (Math.abs(price - 12900.00) < 0.01);
+        test_ok = check("Test 1 (3 Extras)", price, 12900.00) && test_ok;
+
+        // Test 2: keine Extras, kein Rabatt
+        price = calculatePrice(10000.00, 2000.00, 1000.00, 0, 0);
+        test_ok = check("Test 2 (0 Extras)", price, 13000.00) && test_ok;
+
+        // Test 3: 5 Extras -> 15% Rabatt auf Extras
+        price = calculatePrice(10000.00, 2000.00, 1000.00, 5, 0);
+        test_ok = check("Test 3 (5 Extras)", price, 12850.00) && test_ok;
+
+        // Test 4: Haendlerrabatt 20% ist groesser als Extra-Rabatt (10%)
+        price = calculatePrice(10000.00, 2000.00, 1000.00, 3, 20);
+        test_ok = check("Test 4 (3 Extras, 20% Rabatt)", price, 10800.00) && test_ok;
+
+        // Test 5: 5 Extras (15%) ist groesser als Haendlerrabatt (10%)
+        price = calculatePrice(10000.00, 2000.00, 1000.00, 5, 10);
+        test_ok = check("Test 5 (5 Extras, 10% Rabatt)", price, 11850.00) && test_ok;
 
         return test_ok;
+    }
+
+    private static boolean check(String name, double actual, double expected) {
+        boolean ok = Math.abs(actual - expected) < 0.01;
+        System.out.println(name + ": " + (ok ? "OK" : "FEHLER") + " (erwartet " + expected + ", erhalten " + actual + ")");
+        return ok;
     }
 }
